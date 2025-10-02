@@ -106,7 +106,7 @@ npm run start:dev
 - API docs (Redoc): http://localhost:3000/docs
 
 
-![App Image](.\src\assets\resources\doc.png)
+![App Image](/src/assets/resources/doc.png)
 
 
 - OpenAPI YAML: http://localhost:3000/openapi.yaml
@@ -235,7 +235,7 @@ Additional Parameters by filter
 
 ## ERD
 
-![App Image](.\src\assets\resources\erd.jpg)
+![App Image](/src/assets/resources/erd.jpg)
 
 
 
