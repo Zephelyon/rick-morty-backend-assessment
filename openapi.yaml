@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: Rick & Morty API (GraphQL) — Swagger Documentation
+  version: 1.0.0
+  description: |
+    Rick & Morty GraphQL API for retrieving characters with optional filters, cached in Redis and stored in Postgres.
+
+    ## 1. Basic information
+    - EndpointName: getCharactersRickAndMorty
+    - Developer/Responsable: @Andrés Arango
+
+    ## 2. Description
+    Objective: Expose a GraphQL query to retrieve Rick & Morty characters stored in Postgres with optional filters and basic pagination. This is the primary and only public query.
+
+    ## 3. User Story
+    As a Backend developer, I want to fetch Rick & Morty characters with filters using the getCharactersRickAndMorty GraphQL query so that I can deliver filtered data efficiently reusing the same search logic.
+
+    ## 4. Implemented Query
+    Operation: getCharactersRickAndMorty
+
+    Example GraphQL operation:
+    ```graphql
+    query ($filter: CharacterFilterInput) {
+      getCharactersRickAndMorty(filter: $filter) {
+        id
+        name
+        status
+        species
+        gender
+        origin
+      }
+    }
+    ```
+
+    ## 5. Parameters
+    - filter.name: string
+    - filter.status: string (Alive, Dead, unknown)
+    - filter.species: string
+    - filter.gender: string
+    - filter.origin: string
+    - filter.limit: integer (default 50)
+    - filter.offset: integer (default 0)
+
+    ## 6. Example Request
+    POST http://localhost:3000/api/rick-and-morty
+    Content-Type: application/json
+
+    Body:
+    ```json
+    {
+      "query": "query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }",
+      "variables": {
+        "filter": {
+          "name": "Rick",
+          "species": "Human",
+          "status": "Alive",
+          "gender": "Male",
+          "origin": "Earth",
+          "limit": 5,
+          "offset": 0
+        }
+      },
+      "operationName": "getCharactersRickAndMorty"
+    }
+    ```
+
+    ## 7. Example Response
+    ```json
+    {
+      "data": {
+        "getCharactersRickAndMorty": [
+          {
+            "id": 1,
+            "name": "Rick Sanchez",
+            "status": "Alive",
+            "species": "Human",
+            "gender": "Male",
+            "origin": "Earth (C-137)"
+          },
+          {
+            "id": 2,
+            "name": "Morty Smith",
+            "status": "Alive",
+            "species": "Human",
+            "gender": "Male",
+            "origin": "Earth (C-137)"
+          }
+        ]
+      }
+    }
+    ```
+
+    ## 8. Workflow Description
+    - An HTTP client sends POST to /api/rick-and-morty with the operation getCharactersRickAndMorty and optional filter variables
+    - The service resolves the query using the same search logic
+    - Results may be served from Redis cache and/or Postgres
+
+    ## 9. Key notes
+    - GraphQL HTTP endpoint: /api/rick-and-morty
+    - Only query allowed: getCharactersRickAndMorty
+    - Documentation served at /docs (Redocly) and /openapi.yaml
+  contact:
+    name: Rick & Morty Project
+servers:
+  - url: http://localhost:{port}
+    description: Local server
+    variables:
+      port:
+        default: "3000"
+tags:
+  - name: GraphQL
+    description: Execute GraphQL query for Rick & Morty characters.
+x-tagGroups:
+  - name: Rick & Morty API (GraphQL) — Swagger Documentation
+    tags:
+      - GraphQL
+paths:
+  /api/rick-and-morty:
+    post:
+      summary: Execute GraphQL query
+      operationId: getCharactersRickAndMorty
+      description: |
+        Executes a GraphQL query. In this project, the schema provides the `getCharactersRickAndMorty` query to
+        search characters with optional filters (name, status, species, gender, origin) and basic pagination (limit, offset).
+
+        Example GraphQL query:
+
+        ```graphql
+        query ($filter: CharacterFilterInput) {
+          getCharactersRickAndMorty(filter: $filter) {
+            id
+            name
+            status
+            species
+            gender
+            origin
+          }
+        }
+        ```
+      tags: [GraphQL]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: A string containing the GraphQL query.
+                variables:
+                  type: object
+                  description: Variables map for the query.
+                operationName:
+                  type: string
+                  description: Operation name (optional if a single operation is provided).
+              required: [query]
+            examples:
+              byName:
+                summary: Filter by name only
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }
+                  variables:
+                    filter:
+                      name: "Rick"
+              byStatus:
+                summary: Filter by status only
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }
+                  variables:
+                    filter:
+                      status: "Alive"
+              bySpecies:
+                summary: Filter by species only
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }
+                  variables:
+                    filter:
+                      species: "Human"
+              byGender:
+                summary: Filter by gender only
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }
+                  variables:
+                    filter:
+                      gender: "Male"
+              byOrigin:
+                summary: Filter by origin only
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name status species gender origin } }
+                  variables:
+                    filter:
+                      origin: "Earth"
+              pagination:
+                summary: Pagination with limit and offset
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) { getCharactersRickAndMorty(filter: $filter) { id name } }
+                  variables:
+                    filter:
+                      limit: 5
+                      offset: 10
+              combinedFilters:
+                summary: Combined filters (name + species + status + gender + origin)
+                value:
+                  query: |-
+                    query ($filter: CharacterFilterInput) {
+                      getCharactersRickAndMorty(filter: $filter) {
+                        id
+                        name
+                        status
+                        species
+                        gender
+                        origin
+                      }
+                    }
+                  variables:
+                    filter:
+                      name: "Rick"
+                      species: "Human"
+                      status: "Alive"
+                      gender: "Male"
+                      origin: "Earth"
+      responses:
+        "200":
+          description: Standard GraphQL response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+              examples:
+                ok:
+                  summary: Successful response with results
+                  value:
+                    data:
+                      getCharactersRickAndMorty:
+                        - id: 1
+                          name: Rick Sanchez
+                          status: Alive
+                          species: Human
+                          gender: Male
+                          origin: Earth (C-137)
+                        - id: 2
+                          name: Morty Smith
+                          status: Alive
+                          species: Human
+                          gender: Male
+                          origin: Earth (C-137)
+                empty:
+                  summary: Empty result set
+                  value:
+                    data:
+                      getCharactersRickAndMorty: []
+                paged:
+                  summary: Page with 2 items (limit=2)
+                  value:
+                    data:
+                      getCharactersRickAndMorty:
+                        - id: 3
+                          name: Summer Smith
+                          status: Alive
+                          species: Human
+                          gender: Female
+                          origin: Earth (Replacement Dimension)
+                        - id: 4
+                          name: Beth Smith
+                          status: Alive
+                          species: Human
+                          gender: Female
+                          origin: Earth (Replacement Dimension)
+                error:
+                  summary: GraphQL error response
+                  value:
+                    errors:
+                      - message: 'Variable "$filter" got invalid value { origins: "Earth (Replacement Dimension" }; Field "origins" is not defined by type "CharacterFilterInput". Did you mean "origin"?'
+                        path: [getCharactersRickAndMorty]
+        "400":
+          description: Petición inválida (por ejemplo, cuerpo mal formado)
+components:
+  schemas:
+    Character:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        status:
+          type: string
+          description: e.g., Alive, Dead, unknown
+        species:
+          type: string
+        gender:
+          type: string
+        origin:
+          type: string
+    CharacterFilterInput:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        species:
+          type: string
+        gender:
+          type: string
+        origin:
+          type: string
+        limit:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 10
+        offset:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+        path:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          description: Object containing the requested data. Its shape depends on the query.
+          type: object
+          additionalProperties: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+      example:
+        data:
+          getCharactersRickAndMorty:
+            - id: 1
+              name: Rick Sanchez
+              status: Alive
+              species: Human
+              gender: Male
+              origin: Earth (C-137)
