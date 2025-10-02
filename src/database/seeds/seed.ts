@@ -39,7 +39,9 @@ async function fetchCharacters(limit = 15) {
           status
           species
           gender
-          origin { name }
+          origin {
+            name
+          }
         }
       }
     }
@@ -66,21 +68,26 @@ async function run() {
       for (const c of payload) {
         let originId: number | null = null;
         if (c.origin) {
-          const [o] = await originRepo.findOrCreate({ where: { name: c.origin }, defaults: { name: c.origin } });
+          const [o] = await originRepo.findOrCreate({
+            where: { name: c.origin },
+            defaults: { name: c.origin },
+          });
           originId = (o as any).id as number;
         }
         await repo.create({
           name: c.name,
-          status: c.status as any,
-          species: c.species as any,
-          gender: c.gender as any,
-          origin: c.origin as any,
+          status: c.status,
+          species: c.species,
+          gender: c.gender,
+          origin: c.origin,
           originId,
         } as any);
       }
       console.log(`Seeded ${payload.length} characters.`);
     } else {
-      console.log(`Characters table already has ${count} rows. Skipping seeding.`);
+      console.log(
+        `Characters table already has ${count} rows. Skipping seeding.`,
+      );
     }
   } finally {
     await sequelize.close();

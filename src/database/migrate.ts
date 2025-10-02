@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize-typescript';
 import { Umzug, SequelizeStorage } from 'umzug';
-import path from 'path';
 import chalk from 'chalk';
 import { ConfigService } from '@nestjs/config';
 
@@ -44,7 +43,7 @@ async function run() {
       glob: migrationsGlob,
       resolve: ({ name, path, context }) => {
         // Use require for CJS/TS compatibility when running via ts-node or compiled JS
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+
         const mod = require(path!);
         return {
           name,
@@ -66,30 +65,55 @@ async function run() {
   const cmd = process.argv[2] || 'up';
   if (cmd === 'up') {
     await umzug.up();
-    console.log(chalk.bgGreen.black(' MIGRATIONS '), chalk.green('Migrations applied'));
+    console.log(
+      chalk.bgGreen.black(' MIGRATIONS '),
+      chalk.green('Migrations applied'),
+    );
 
     // Sanity-check: verify public.characters and public.origins exist
     try {
       const [charRows] = await sequelize.query(
-        "select table_schema, table_name from information_schema.tables where table_schema = 'public' and table_name = 'characters';"
+        "select table_schema, table_name from information_schema.tables where table_schema = 'public' and table_name = 'characters';",
       );
-      console.log(chalk.cyan('umzug'), 'post-migrate characters table check:', charRows);
+      console.log(
+        chalk.cyan('umzug'),
+        'post-migrate characters table check:',
+        charRows,
+      );
 
       const [origRows] = await sequelize.query(
-        "select table_schema, table_name from information_schema.tables where table_schema = 'public' and table_name = 'origins';"
+        "select table_schema, table_name from information_schema.tables where table_schema = 'public' and table_name = 'origins';",
       );
-      console.log(chalk.cyan('umzug'), 'post-migrate origins table check:', origRows);
+      console.log(
+        chalk.cyan('umzug'),
+        'post-migrate origins table check:',
+        origRows,
+      );
     } catch (e) {
-      console.warn(chalk.yellow('umzug'), 'post-migrate table check failed:', e);
+      console.warn(
+        chalk.yellow('umzug'),
+        'post-migrate table check failed:',
+        e,
+      );
     }
   } else if (cmd === 'down') {
     await umzug.down({ to: 0 as unknown as string });
-    console.log(chalk.bgYellow.black(' MIGRATIONS '), chalk.yellow('Migrations reverted'));
+    console.log(
+      chalk.bgYellow.black(' MIGRATIONS '),
+      chalk.yellow('Migrations reverted'),
+    );
   } else if (cmd === 'list') {
     const pending = await umzug.pending();
-    console.log(chalk.bgBlue.white(' MIGRATIONS '), chalk.blue('Pending migrations:'), pending);
+    console.log(
+      chalk.bgBlue.white(' MIGRATIONS '),
+      chalk.blue('Pending migrations:'),
+      pending,
+    );
   } else {
-    console.error(chalk.bgRed.white(' ERROR '), chalk.red(`Unknown command ${cmd}`));
+    console.error(
+      chalk.bgRed.white(' ERROR '),
+      chalk.red(`Unknown command ${cmd}`),
+    );
     process.exit(1);
   }
 

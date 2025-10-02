@@ -8,7 +8,6 @@ import { LogExecutionTime } from '../../../../common/decorators/log-execution-ti
 export class CharactersResolver {
   constructor(private readonly service: CharactersService) {}
 
-
   // New explicit alias to fit the requested documentation structure
   @Query(() => [CharacterType], { name: 'getCharactersRickAndMorty' })
   @LogExecutionTime('GraphQL Query: getCharactersRickAndMorty')
@@ -22,7 +21,8 @@ export class CharactersResolver {
    * Returns: List of CharacterTypes (empty array if no results).
    */
   async getCharactersRickAndMorty(
-    @Args('filter', { type: () => CharacterFilterInput, nullable: true }) filter?: CharacterFilterInput,
+    @Args('filter', { type: () => CharacterFilterInput, nullable: true })
+    filter?: CharacterFilterInput,
   ): Promise<CharacterType[]> {
     const res = await this.service.search(filter ?? {});
     return Array.isArray(res) ? res : [];

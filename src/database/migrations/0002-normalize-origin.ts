@@ -5,7 +5,12 @@ export const up: MigrationFn<QueryInterface> = async ({ context: qi }) => {
   // 1) Create origins table
   const originsTable = { tableName: 'origins', schema: 'public' } as any;
   await qi.createTable(originsTable, {
-    id: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: { type: DataTypes.STRING, allowNull: false, unique: true },
   });
   await qi.addIndex(originsTable, ['name']);

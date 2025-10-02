@@ -1,7 +1,9 @@
 import { QueryInterface, DataTypes } from 'sequelize';
 import type { MigrationFn } from 'umzug';
 
-export const up: MigrationFn<QueryInterface> = async ({ context: queryInterface }) => {
+export const up: MigrationFn<QueryInterface> = async ({
+  context: queryInterface,
+}) => {
   // Ensure table is created in the public schema explicitly (avoids search_path issues)
   const table = { tableName: 'characters', schema: 'public' } as any;
 
@@ -41,10 +43,11 @@ export const up: MigrationFn<QueryInterface> = async ({ context: queryInterface 
   await queryInterface.addIndex(table, ['species']);
   await queryInterface.addIndex(table, ['gender']);
   await queryInterface.addIndex(table, ['origin']);
-
 };
 
-export const down: MigrationFn<QueryInterface> = async ({ context: queryInterface }) => {
+export const down: MigrationFn<QueryInterface> = async ({
+  context: queryInterface,
+}) => {
   const table = { tableName: 'characters', schema: 'public' } as any;
   await queryInterface.dropTable(table);
 };

@@ -1,7 +1,17 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min, Transform, Type } from '../../../../../common/validation/optional-validators';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  Transform,
+  Type,
+} from '../../../../../common/validation/optional-validators';
 
-const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
+const trim = ({ value }: { value: unknown }) =>
+  typeof value === 'string' ? value.trim() : value;
 
 @InputType()
 export class CharacterFilterInput {
@@ -40,7 +50,11 @@ export class CharacterFilterInput {
   @Transform(trim)
   origin?: string;
 
-  @Field({ nullable: true, description: 'Max items to return', defaultValue: 20 })
+  @Field({
+    nullable: true,
+    description: 'Max items to return',
+    defaultValue: 20,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -48,7 +62,11 @@ export class CharacterFilterInput {
   @Max(100)
   limit?: number;
 
-  @Field({ nullable: true, description: 'Items to skip (offset) for pagination', defaultValue: 0 })
+  @Field({
+    nullable: true,
+    description: 'Items to skip (offset) for pagination',
+    defaultValue: 0,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

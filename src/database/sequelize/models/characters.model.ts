@@ -1,4 +1,13 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { Origin } from './origin.model';
 
 @Table({ tableName: 'characters', timestamps: false })

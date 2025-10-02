@@ -20,7 +20,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);
-  // eslint-disable-next-line no-console
+
   const label = chalk.bgBlue.white.bold(' START ');
   const url = chalk.cyan(`http://localhost:${port}`);
   console.log(`${label} ${chalk.green('App running on')} ${url}`);

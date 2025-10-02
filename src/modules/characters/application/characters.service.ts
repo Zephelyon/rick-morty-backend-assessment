@@ -7,7 +7,7 @@ function stableStringify(obj: any): string {
   if (!obj || typeof obj !== 'object') return JSON.stringify(obj);
   const allKeys = Object.keys(obj).sort();
   const sorted: Record<string, unknown> = {};
-  for (const k of allKeys) sorted[k] = (obj as any)[k];
+  for (const k of allKeys) sorted[k] = obj[k];
   return JSON.stringify(sorted);
 }
 
@@ -17,7 +17,6 @@ export class CharactersService {
     private readonly repo: CharactersRepository,
     private readonly redis: RedisService,
   ) {}
-
 
   /**
    * Searches for characters based on a filter and caches the result.
@@ -37,7 +36,7 @@ export class CharactersService {
     if (cached) return cached;
 
     const rows = await this.repo.findByFilter(filter);
-    const plain = rows.map((r: any) => r.get ? r.get({ plain: true }) : r);
+    const plain = rows.map((r: any) => (r.get ? r.get({ plain: true }) : r));
     await this.redis.set(key, plain, 120);
     return plain;
   }

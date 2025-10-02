@@ -19,12 +19,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       },
     });
     this.client.on('error', (err) => {
-      // eslint-disable-next-line no-console
       console.error('Redis Client Error', err);
     });
     await this.client.connect();
   }
-
 
   async onModuleDestroy() {
     if (this.client) {
@@ -42,8 +40,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async set<T = unknown>(key: string, value: T, ttlSeconds = 600): Promise<void> {
-    const payload = typeof value === 'string' ? (value as string) : JSON.stringify(value);
+  async set<T = unknown>(
+    key: string,
+    value: T,
+    ttlSeconds = 600,
+  ): Promise<void> {
+    const payload =
+      typeof value === 'string' ? (value as string) : JSON.stringify(value);
     await this.client.set(key, payload, { EX: ttlSeconds });
   }
 
@@ -54,7 +57,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     // node-redis v5 scan iterator
     const iterator = (this.client as any).scanIterator({ MATCH: `${prefix}*` });
     for await (const key of iterator as AsyncIterable<string>) {
-      const n = await this.client.del(key as string);
+      const n = await this.client.del(key);
       deleted += n ?? 0;
     }
     return deleted;

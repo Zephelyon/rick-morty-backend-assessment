@@ -8,7 +8,12 @@ import { CharactersSyncService } from '../application/characters.sync.service';
 
 @Module({
   imports: [DatabaseModule, RedisModule],
-  providers: [CharactersService, CharactersResolver, CharactersRepository, CharactersSyncService],
+  providers: [
+    CharactersService,
+    CharactersResolver,
+    CharactersRepository,
+    CharactersSyncService,
+  ],
   exports: [CharactersService, CharactersRepository],
 })
 export class CharactersModule {}

@@ -44,20 +44,28 @@ export class CharactersSyncService {
         if (!row) continue; // Only update existing rows; we do not insert new ones here
 
         const changes: Partial<Character> = {};
-        if ((row.status ?? null) !== (c.status ?? null)) changes.status = c.status as any;
-        if ((row.species ?? null) !== (c.species ?? null)) changes.species = c.species as any;
-        if ((row.gender ?? null) !== (c.gender ?? null)) changes.gender = c.gender as any;
+        if ((row.status ?? null) !== (c.status ?? null))
+          changes.status = c.status as any;
+        if ((row.species ?? null) !== (c.species ?? null))
+          changes.species = c.species as any;
+        if ((row.gender ?? null) !== (c.gender ?? null))
+          changes.gender = c.gender as any;
 
         // Dual-write origin string and originId (normalized)
         let desiredOriginId: number | null = null;
         if (c.origin) {
           const originRepo = this.sequelize.getRepository(Origin);
-          const [o] = await originRepo.findOrCreate({ where: { name: c.origin }, defaults: { name: c.origin } });
+          const [o] = await originRepo.findOrCreate({
+            where: { name: c.origin },
+            defaults: { name: c.origin },
+          });
           desiredOriginId = (o as any).id as number;
         }
 
-        if ((row.origin ?? null) !== (c.origin ?? null)) (changes as any).origin = c.origin as any;
-        if ((row as any).originId !== desiredOriginId) (changes as any).originId = desiredOriginId as any;
+        if ((row.origin ?? null) !== (c.origin ?? null))
+          (changes as any).origin = c.origin as any;
+        if ((row as any).originId !== desiredOriginId)
+          (changes as any).originId = desiredOriginId as any;
 
         if (Object.keys(changes).length > 0) {
           await row.update(changes);
@@ -65,19 +73,23 @@ export class CharactersSyncService {
         }
       }
 
-      this.logger.log(`Character sync completed. Updated ${updated} record(s).`);
+      this.logger.log(
+        `Character sync completed. Updated ${updated} record(s).`,
+      );
 
       // Invalidate cache only if data changed
       if (updated > 0) {
         try {
           const deleted = await this.redis.delByPrefix('characters:');
-          this.logger.log(`Cache invalidated for prefix 'characters:'. Deleted ${deleted} key(s).`);
+          this.logger.log(
+            `Cache invalidated for prefix 'characters:'. Deleted ${deleted} key(s).`,
+          );
         } catch (e) {
           this.logger.warn(`Failed to invalidate cache: ${e}`);
         }
       }
     } catch (err) {
-      this.logger.error('Character sync failed', err as any);
+      this.logger.error('Character sync failed', err);
     }
   }
 
@@ -91,7 +103,9 @@ export class CharactersSyncService {
             status
             species
             gender
-            origin { name }
+            origin {
+              name
+            }
           }
         }
       }

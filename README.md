@@ -104,6 +104,11 @@ npm run start:dev
 - App: http://localhost:3000
 - GraphQL endpoint: http://localhost:3000/api/rick-and-morty
 - API docs (Redoc): http://localhost:3000/docs
+
+
+![Logo](.\src\assets\resources\doc.png)
+
+
 - OpenAPI YAML: http://localhost:3000/openapi.yaml
 
 To stop infra services:
@@ -226,6 +231,12 @@ Additional Parameters by filter
   }
 }
 ```
+
+
+## ERD
+
+![Logo](.\src\assets\resources\erd.jpg)
+
 
 
 ## Troubleshooting

@@ -23,11 +23,17 @@ function colorDuration(ms: number, isError = false) {
 }
 
 function prefix(isError = false) {
-  return isError ? chalk.bgRed.white.bold(' EXEC ') : chalk.bgBlue.white.bold(' EXEC ');
+  return isError
+    ? chalk.bgRed.white.bold(' EXEC ')
+    : chalk.bgBlue.white.bold(' EXEC ');
 }
 
 export function LogExecutionTime(label?: string): MethodDecorator {
-  return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+  return (
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor,
+  ) => {
     const original = descriptor.value;
 
     if (typeof original !== 'function') {
@@ -37,7 +43,7 @@ export function LogExecutionTime(label?: string): MethodDecorator {
     // This block copies design-time metadata (used by other decorators) from the original function to the wrapper.
     const copyFnMetadata = (from: Function, to: Function) => {
       try {
-        const R: any = (Reflect as any);
+        const R: any = Reflect as any;
         if (R && typeof R.getMetadataKeys === 'function') {
           const keys = R.getMetadataKeys(from) || [];
           for (const k of keys) {
@@ -62,13 +68,14 @@ export function LogExecutionTime(label?: string): MethodDecorator {
 
     // Wrapper that handles both sync and async methods uniformly via await.
     const wrapped = async function (...args: any[]) {
-      const name = label ?? `${target?.constructor?.name ?? ''}.${String(propertyKey)}`;
+      const name =
+        label ?? `${target?.constructor?.name ?? ''}.${String(propertyKey)}`;
       const start = nowNs();
       try {
         const val = await original.apply(this, args);
         const end = nowNs();
         const durationMs = Number((end as any) - (start as any)) / 1_000_000;
-        // eslint-disable-next-line no-console
+
         console.log(
           `${prefix(false)} ${chalk.gray(new Date().toISOString())} ${chalk.cyan(name)} ${chalk.gray('in')} ${colorDuration(durationMs)}`,
         );
@@ -76,7 +83,7 @@ export function LogExecutionTime(label?: string): MethodDecorator {
       } catch (err) {
         const end = nowNs();
         const durationMs = Number((end as any) - (start as any)) / 1_000_000;
-        // eslint-disable-next-line no-console
+
         console.log(
           `${prefix(true)} ${chalk.gray(new Date().toISOString())} ${chalk.cyan(name)} ${chalk.gray('failed in')} ${colorDuration(durationMs, true)}`,
         );

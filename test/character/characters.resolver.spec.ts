@@ -2,7 +2,7 @@ jest.mock('src/common/decorators/log-execution-time.decorator', () => ({
   LogExecutionTime: () => () => undefined,
 }));
 
-import {CharactersResolver} from "../../src/modules/characters/interfaces/graphql/characters.resolver";
+import { CharactersResolver } from '../../src/modules/characters/interfaces/graphql/characters.resolver';
 
 describe('CharactersResolver.getCharactersRickAndMorty', () => {
   function makeResolver() {
@@ -14,9 +14,11 @@ describe('CharactersResolver.getCharactersRickAndMorty', () => {
   it('delegates to service.search with the provided filter and returns list', async () => {
     const { resolver, service } = makeResolver();
     const data = [{ id: 1, name: 'Rick Sanchez' }];
-    (service.search as jest.Mock).mockResolvedValueOnce(data);
+    service.search.mockResolvedValueOnce(data);
 
-    const res = await resolver.getCharactersRickAndMorty({ name: 'Rick' } as any);
+    const res = await resolver.getCharactersRickAndMorty({
+      name: 'Rick',
+    } as any);
 
     expect(service.search).toHaveBeenCalledWith({ name: 'Rick' });
     expect(res).toEqual(data);
@@ -24,7 +26,7 @@ describe('CharactersResolver.getCharactersRickAndMorty', () => {
 
   it('returns empty array when service returns non-array', async () => {
     const { resolver, service } = makeResolver();
-    (service.search as jest.Mock).mockResolvedValueOnce(null);
+    service.search.mockResolvedValueOnce(null);
 
     const res = await resolver.getCharactersRickAndMorty(undefined);
 
@@ -33,7 +35,7 @@ describe('CharactersResolver.getCharactersRickAndMorty', () => {
 
   it('uses {} when filter is undefined', async () => {
     const { resolver, service } = makeResolver();
-    (service.search as jest.Mock).mockResolvedValueOnce([]);
+    service.search.mockResolvedValueOnce([]);
 
     await resolver.getCharactersRickAndMorty(undefined);
 

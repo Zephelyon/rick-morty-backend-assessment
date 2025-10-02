@@ -1,6 +1,5 @@
 import { Op } from 'sequelize';
-import {CharactersRepository} from "../../src/modules/characters/infrastructure/persistence/sequelize/characters.repository";
-
+import { CharactersRepository } from '../../src/modules/characters/infrastructure/persistence/sequelize/characters.repository';
 
 describe('CharactersRepository.findByFilter', () => {
   function makeRepo() {
@@ -16,12 +15,17 @@ describe('CharactersRepository.findByFilter', () => {
     const { repo, findAll } = makeRepo();
     findAll.mockResolvedValue([]);
 
-    await repo.findByFilter({ name: 'Rick', status: 'Alive', limit: 10, offset: 5 });
+    await repo.findByFilter({
+      name: 'Rick',
+      status: 'Alive',
+      limit: 10,
+      offset: 5,
+    });
 
     expect(findAll).toHaveBeenCalledTimes(1);
     const arg = findAll.mock.calls[0][0];
 
-    expect(arg.order).toEqual([["id", "ASC"]]);
+    expect(arg.order).toEqual([['id', 'ASC']]);
     expect(arg.limit).toBe(10);
     expect(arg.offset).toBe(5);
 
@@ -46,7 +50,11 @@ describe('CharactersRepository.findByFilter', () => {
     const { repo, findAll } = makeRepo();
     findAll.mockResolvedValue([]);
 
-    await repo.findByFilter({ species: 'Human', gender: 'Male', origin: 'Earth' } as any);
+    await repo.findByFilter({
+      species: 'Human',
+      gender: 'Male',
+      origin: 'Earth',
+    } as any);
 
     const arg = findAll.mock.calls[0][0];
     expect(arg.where).toEqual({
