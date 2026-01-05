@@ -40,4 +40,38 @@ export class CharactersService {
     await this.redis.set(key, plain, 120);
     return plain;
   }
+
+  async getById(id: number) {
+    const row = await this.repo.findById(id);
+    return row ? (row as any).get?.({ plain: true }) ?? row : null;
+  }
+
+  async create(input: any) {
+    const created = await this.repo.create(input);
+    try {
+      await this.redis.delByPrefix('characters:');
+    } catch {}
+    return (created as any).get?.({ plain: true }) ?? created;
+  }
+
+  async update(id: number, input: any) {
+    const updated = await this.repo.updateById(id, input);
+    if (updated) {
+      try {
+        await this.redis.delByPrefix('characters:');
+      } catch {}
+      return (updated as any).get?.({ plain: true }) ?? updated;
+    }
+    return null;
+  }
+
+  async remove(id: number) {
+    const ok = await this.repo.deleteById(id);
+    if (ok) {
+      try {
+        await this.redis.delByPrefix('characters:');
+      } catch {}
+    }
+    return ok;
+  }
 }

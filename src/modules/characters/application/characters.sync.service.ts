@@ -8,6 +8,7 @@ import { request, gql } from 'graphql-request';
 import { RedisService } from '../../../infrastructure/cache/redis/redis.service';
 
 interface ApiCharacter {
+  id: number;
   name: string;
   status: string | null;
   species: string | null;
@@ -40,7 +41,7 @@ export class CharactersSyncService {
 
       let updated = 0;
       for (const c of latest) {
-        const row = await repo.findOne({ where: { name: c.name } });
+        const row = await repo.findOne({ where: { id: c.id } });
         if (!row) continue; // Only update existing rows; we do not insert new ones here
 
         const changes: Partial<Character> = {};
@@ -99,6 +100,7 @@ export class CharactersSyncService {
       query {
         characters(page: 1) {
           results {
+            id
             name
             status
             species
@@ -113,6 +115,7 @@ export class CharactersSyncService {
     const data = await request<any>(endpoint, query);
     const results = data?.characters?.results || [];
     return results.slice(0, limit).map((c: any) => ({
+      id: c.id,
       name: c.name,
       status: c.status ?? null,
       species: c.species ?? null,
